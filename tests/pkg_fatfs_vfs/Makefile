@@ -32,7 +32,7 @@ BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-uno \
 # this list is composed of boards with sufficient memory and support spi/gpio + native
 BOARD_WHITELIST := airfy-beacon arduino-due arduino-duemilanove arduino-mega2560 \
                    arduino-mkr1000 arduino-mkrzero arduino-uno arduino-zero avsextrem \
-                   b-l072z-lrwan1 b-l475e-iot01a bluepill cc2538dk ek-lm4f120xl \
+                   b-l072z-lrwan1 b-l475e-iot01a blackpill bluepill cc2538dk ek-lm4f120xl \
                    feather-m0 fox frdm-k22f frdm-k64f ikea-tradfri iotlab-a8-m3 \
                    iotlab-m3 limifrog-v1 maple-mini msba2 msbiot \
                    mulle nrf52840dk nrf52dk nrf6310 nucleo-f207zg nucleo-f303ze \

@@ -11,6 +11,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              arduino-zero \
                              avsextrem \
                              b-l072z-lrwan1 \
+                             blackpill \
                              bluepill \
                              calliope-mini \
                              cc2538dk \
@@ -99,6 +100,7 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
                        arduino-mkrzero \
                        arduino-zero \
                        b-l072z-lrwan1 \
+                       blackpill \
                        bluepill \
                        calliope-mini \
                        cc2538dk \
