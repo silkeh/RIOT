@@ -134,11 +134,13 @@ void il3829_fill(il3829_t *dev, uint8_t x1, uint8_t x2, uint16_t y1, uint16_t y2
 
     spi_acquire(dev->params.spi, dev->params.cs_pin, SPI_MODE_0, dev->params.spi_clk);
     spi_display_cmd_start(&dev->params, IL3829_CMD_WRITE_RAM, true);
-    for (uint16_t y = y1; y < y2; y++) {
-        for (uint8_t x = (x1 >> 3); x < (x2 >> 3); x++) {
-            spi_transfer_byte(dev->params.spi, dev->params.cs_pin, true, color);
-        }
+
+    uint16_t size = ((x2 - x1) >> 3) * (y2 - y1);
+    for (uint16_t i = 0; i < size - 1; i++) {
+        spi_transfer_byte(dev->params.spi, dev->params.cs_pin, true, color);
     }
+    spi_transfer_byte(dev->params.spi, dev->params.cs_pin, false, color);
+
     spi_release(dev->params.spi);
 }
 
