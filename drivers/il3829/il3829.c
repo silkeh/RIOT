@@ -40,9 +40,10 @@ int il3829_init(il3829_t *dev, const spi_display_params_t *params,
 
 void il3829_display_init(il3829_t *dev)
 {
-    uint16_t y_data[2] = {0};
+    uint16_t y_data[2] = { 0 };
+
     y_data[0] = (dev->size_y - 1) & 0x1FF;
-    spi_display_write_cmd(&dev->params, IL3829_CMD_DRIVER_OUTPUT_CONTROL, (uint8_t*)y_data, 3);
+    spi_display_write_cmd(&dev->params, IL3829_CMD_DRIVER_OUTPUT_CONTROL, (uint8_t *)y_data, 3);
 
     uint8_t data[3];
     data[0] = 0xD7; /* Phase 1: 30 ms phase, sel 3, 6.58 us off */
@@ -64,31 +65,33 @@ void il3829_display_init(il3829_t *dev)
 }
 
 void il3829_set_area(il3829_t *dev, uint8_t x_start, uint8_t x_end,
-                                    uint16_t y_start, uint16_t y_end)
+                     uint16_t y_start, uint16_t y_end)
 {
     /* Set X bounds */
     uint8_t x_data[] = {
         (x_start >> 3) & 0x1F,
         ((x_end - 1) >> 3) & 0x1F,
     };
+
     spi_display_write_cmd(&dev->params, IL3829_CMD_SET_RAM_X, x_data, sizeof x_data);
 
     /* Set Y bounds */
     /* TODO: support BE */
     uint16_t y_data[] = {
-        y_start & 0x01FF,
+        y_start &0x01FF,
         (y_end - 1) & 0x01FF,
     };
-    spi_display_write_cmd(&dev->params, IL3829_CMD_SET_RAM_Y, (uint8_t*)y_data, sizeof y_data);
+    spi_display_write_cmd(&dev->params, IL3829_CMD_SET_RAM_Y, (uint8_t *)y_data, sizeof y_data);
 
     /* Set counters to start positions */
     spi_display_write_cmd(&dev->params, IL3829_CMD_SET_RAM_X_ADDR_COUNTER, x_data, 1);
-    spi_display_write_cmd(&dev->params, IL3829_CMD_SET_RAM_Y_ADDR_COUNTER, (uint8_t*)y_data, 2);
+    spi_display_write_cmd(&dev->params, IL3829_CMD_SET_RAM_Y_ADDR_COUNTER, (uint8_t *)y_data, 2);
 }
 
 void il3829_activate(il3829_t *dev)
 {
-    uint8_t data[] = {0xC0}; /* Enable Clock Signal then Enable CP */
+    uint8_t data[] = { 0xC0 }; /* Enable Clock Signal then Enable CP */
+
     spi_display_write_cmd(&dev->params, IL3829_CMD_DISPLAY_UPDATE_CONTROL_2, data, sizeof data);
     spi_display_write_cmd(&dev->params, IL3829_CMD_MASTER_ACTIVATION, NULL, 0);
     spi_display_wait(&dev->params, IL3829_WAIT_ACTIVATION);
@@ -96,7 +99,8 @@ void il3829_activate(il3829_t *dev)
 
 void il3829_deactivate(il3829_t *dev)
 {
-    uint8_t data[] = {0x03}; /* Enable and disable (TODO: check C3 or 03) */
+    uint8_t data[] = { 0x03 }; /* Enable and disable (TODO: check C3 or 03) */
+
     spi_display_write_cmd(&dev->params, IL3829_CMD_DISPLAY_UPDATE_CONTROL_2, data, sizeof data);
     spi_display_write_cmd(&dev->params, IL3829_CMD_MASTER_ACTIVATION, NULL, 0);
     spi_display_wait(&dev->params, IL3829_WAIT_ACTIVATION);
@@ -107,12 +111,13 @@ void il3829_init_full(il3829_t *dev)
     il3829_display_init(dev);
     il3829_set_area(dev, 0, 200, 0, 200);
     spi_display_write_cmd(&dev->params, IL3829_CMD_WRITE_LUT_REGISTER,
-                            il3829_lut_default_full, sizeof il3829_lut_default_full);
+                          il3829_lut_default_full, sizeof il3829_lut_default_full);
 }
 
 void il3829_update_full(il3829_t *dev)
 {
-    uint8_t data[] = {0xC4}; /* Enable Clock Signal then Enable CP | display pattern */
+    uint8_t data[] = { 0xC4 }; /* Enable Clock Signal then Enable CP | display pattern */
+
     spi_display_write_cmd(&dev->params, IL3829_CMD_DISPLAY_UPDATE_CONTROL_2, data, sizeof data);
     spi_display_write_cmd(&dev->params, IL3829_CMD_MASTER_ACTIVATION, NULL, 0);
     spi_display_wait(&dev->params, IL3829_WAIT_UPDATE_FULL);
@@ -124,12 +129,13 @@ void il3829_init_part(il3829_t *dev)
     il3829_display_init(dev);
     il3829_set_area(dev, 0, 200, 0, 200);
     spi_display_write_cmd(&dev->params, IL3829_CMD_WRITE_LUT_REGISTER,
-                            il3829_lut_default_part, sizeof il3829_lut_default_part);
+                          il3829_lut_default_part, sizeof il3829_lut_default_part);
 }
 
 void il3829_update_part(il3829_t *dev)
 {
-    uint8_t data[] = {0x04}; /* To display pattern */
+    uint8_t data[] = { 0x04 }; /* To display pattern */
+
     spi_display_write_cmd(&dev->params, IL3829_CMD_DISPLAY_UPDATE_CONTROL_2, data, sizeof data);
     spi_display_write_cmd(&dev->params, IL3829_CMD_MASTER_ACTIVATION, NULL, 0);
     spi_display_wait(&dev->params, IL3829_WAIT_UPDATE_PART);
@@ -165,13 +171,16 @@ void il3829_fill_area(il3829_t *dev, uint8_t color, uint8_t x_start, uint8_t x_e
     spi_release(dev->params.spi);
 }
 
-void il3829_sleep(il3829_t *dev) {
+void il3829_sleep(il3829_t *dev)
+{
     uint8_t data = 0x01;
+
     spi_display_write_cmd(&dev->params, IL3829_CMD_DEEP_SLEEP_MODE, &data, 1);
 }
 
 /* TODO: test this */
-void il3829_wake(il3829_t *dev) {
+void il3829_wake(il3829_t *dev)
+{
     /* Give a low pulse on the reset pin */
     if (dev->params.rst_pin != GPIO_UNDEF) {
         gpio_clear(dev->params.rst_pin);
@@ -184,6 +193,7 @@ void il3829_wake(il3829_t *dev) {
     spi_display_write_cmd(&dev->params, IL3829_CMD_DEEP_SLEEP_MODE, &data, 1);
 }
 
-void il3829_swreset(il3829_t *dev) {
+void il3829_swreset(il3829_t *dev)
+{
     spi_display_write_cmd(&dev->params, IL3829_CMD_SWRESET, NULL, 0);
 }
