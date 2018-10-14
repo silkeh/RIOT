@@ -24,6 +24,9 @@
 
 void spi_display_cmd_start(spi_display_params_t *p, uint8_t cmd, bool cont)
 {
+    if(p->busy_pin != GPIO_UNDEF) {
+        while(gpio_read(p->busy_pin)) {}
+    }
     gpio_clear(p->dc_pin);
     spi_transfer_byte(p->spi, p->cs_pin, cont, (uint8_t)cmd);
     gpio_set(p->dc_pin);
@@ -31,9 +34,6 @@ void spi_display_cmd_start(spi_display_params_t *p, uint8_t cmd, bool cont)
 
 void spi_display_write_cmd(spi_display_params_t *p, uint8_t cmd, const uint8_t* params, size_t plen)
 {
-    if(p->busy_pin != GPIO_UNDEF) {
-        while(gpio_read(p->busy_pin)) {}
-    }
     spi_acquire(p->spi, p->cs_pin, SPI_MODE_0, p->spi_clk);
     spi_display_cmd_start(p, cmd, plen ? true : false);
     if (plen) {
