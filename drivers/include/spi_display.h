@@ -35,7 +35,7 @@ typedef struct {
     gpio_t dc_pin;      /**< pin connected to the DC line */
     gpio_t rst_pin;     /**< pin connected to the reset line */
     gpio_t busy_pin;    /**< pin connected to the busy line */
-    bool dummy;         /**< true if device requires dummy transfers */
+    bool dummy;         /**< if device requires a dummy cycle before read */
 } spi_display_params_t;
 
 /**
