@@ -56,8 +56,7 @@ void spi_display_read_cmd(spi_display_params_t *p, uint8_t cmd, uint8_t* params,
 int spi_display_init(spi_display_params_t *p)
 {
     if(p->rst_pin != GPIO_UNDEF) {
-        if (gpio_init(p->rst_pin, GPIO_OUT) != 0)
-        {
+        if (gpio_init(p->rst_pin, GPIO_OUT) != 0) {
             DEBUG("[spi_display] init: error initializing the RST pin\n");
             return SPI_DISPLAY_RST_FAIL;
         }
@@ -65,8 +64,7 @@ int spi_display_init(spi_display_params_t *p)
     }
 
     if(p->busy_pin != GPIO_UNDEF) {
-        if (gpio_init(p->busy_pin, GPIO_IN) != 0)
-        {
+        if (gpio_init(p->busy_pin, GPIO_IN) != 0) {
             DEBUG("[spi_display] init: error initializing the BUSY pin\n");
             return SPI_DISPLAY_BUSY_FAIL;
         }
@@ -79,8 +77,7 @@ int spi_display_init(spi_display_params_t *p)
     gpio_set(p->dc_pin);
 
     int res = spi_init_cs(p->spi, p->cs_pin);
-    if (res != SPI_OK)
-    {
+    if (res != SPI_OK) {
         DEBUG("[spi_display] init: error initializing the CS pin [%i]\n", res);
         return res;
     }
