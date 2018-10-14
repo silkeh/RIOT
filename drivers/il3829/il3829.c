@@ -51,7 +51,7 @@ void il3829_display_init(il3829_t *dev)
     data[0] = 0x9D; /* Phase 3: 10 ms phase, sel 4, 1.54 us off */
     spi_display_write_cmd(&dev->params, IL3829_CMD_BOOSTER_SOFT_START_CONTROL, data, 3);
 
-    data[0] = 0x9B; // VCOM 7C (TODO ??? a8/9b?)
+    data[0] = IL3829_VCOM;
     spi_display_write_cmd(&dev->params, IL3829_CMD_WRITE_VCOM_REGISTER, data, 1);
 
     data[0] = 0x1A; /* 4 dummy line per gate */
@@ -62,30 +62,6 @@ void il3829_display_init(il3829_t *dev)
 
     data[0] = (uint8_t)dev->entry_mode;
     spi_display_write_cmd(&dev->params, IL3829_CMD_DATA_ENTRY_MODE_SETTING, data, 1);
-}
-
-void il3829_set_area(il3829_t *dev, uint8_t x_start, uint8_t x_end,
-                     uint16_t y_start, uint16_t y_end)
-{
-    /* Set X bounds */
-    uint8_t x_data[] = {
-        (x_start >> 3) & 0x1F,
-        ((x_end - 1) >> 3) & 0x1F,
-    };
-
-    spi_display_write_cmd(&dev->params, IL3829_CMD_SET_RAM_X, x_data, sizeof x_data);
-
-    /* Set Y bounds */
-    /* TODO: support BE */
-    uint16_t y_data[] = {
-        y_start &0x01FF,
-        (y_end - 1) & 0x01FF,
-    };
-    spi_display_write_cmd(&dev->params, IL3829_CMD_SET_RAM_Y, (uint8_t *)y_data, sizeof y_data);
-
-    /* Set counters to start positions */
-    spi_display_write_cmd(&dev->params, IL3829_CMD_SET_RAM_X_ADDR_COUNTER, x_data, 1);
-    spi_display_write_cmd(&dev->params, IL3829_CMD_SET_RAM_Y_ADDR_COUNTER, (uint8_t *)y_data, 2);
 }
 
 void il3829_activate(il3829_t *dev)
@@ -147,28 +123,57 @@ void il3829_write_ram(il3829_t *dev)
     spi_display_write_cmd(&dev->params, IL3829_CMD_WRITE_RAM, NULL, 0);
 }
 
-void il3829_write_buffer(il3829_t *dev, const uint8_t *buf, size_t len)
-{
-    spi_display_write_cmd(&dev->params, IL3829_CMD_WRITE_RAM, buf, len);
-}
-
 void il3829_clear(il3829_t *dev)
 {
     il3829_fill_area(dev, IL3829_COLOR_WHITE, 0, dev->size_x, 0, dev->size_y);
 }
 
-void il3829_fill_area(il3829_t *dev, uint8_t color, uint8_t x_start, uint8_t x_end, uint16_t y_start, uint16_t y_end)
+void il3829_fill(il3829_t *dev, uint8_t x1, uint8_t x2, uint16_t y1, uint16_t y2, uint8_t color)
 {
-    il3829_set_area(dev, x_start, x_end, y_start, y_end);
+    il3829_set_area(dev, x1, x2, y1, y2);
 
     spi_acquire(dev->params.spi, dev->params.cs_pin, SPI_MODE_0, dev->params.spi_clk);
     spi_display_cmd_start(&dev->params, IL3829_CMD_WRITE_RAM, true);
-    for (uint16_t y = y_start; y < y_end; y++) {
-        for (uint8_t x = (x_start >> 3); x < (x_end >> 3); x++) {
+    for (uint16_t y = y1; y < y2; y++) {
+        for (uint8_t x = (x1 >> 3); x < (x2 >> 3); x++) {
             spi_transfer_byte(dev->params.spi, dev->params.cs_pin, true, color);
         }
     }
     spi_release(dev->params.spi);
+}
+
+void il3829_fill_pixels(il3829_t *dev, uint8_t x1, uint8_t x2, uint16_t y1, uint16_t y2,
+                        uint8_t *px)
+{
+    il3829_set_area(dev, x1, x2, y1, y2);
+    il3829_write_buffer(dev, px, (x2 - x1) * (y2 - y1));
+}
+
+void il3829_set_area(il3829_t *dev, uint8_t x1, uint8_t x2, uint16_t y1, uint16_t y2)
+{
+    /* Set X bounds */
+    uint8_t x_data[] = {
+        (x1 >> 3) & 0x1F,
+        ((x2 - 1) >> 3) & 0x1F,
+    };
+    spi_display_write_cmd(&dev->params, IL3829_CMD_SET_RAM_X, x_data, sizeof x_data);
+
+    /* Set Y bounds */
+    /* TODO: support BE */
+    uint16_t y_data[] = {
+        y1 &0x01FF,
+        (y2 - 1) & 0x01FF,
+    };
+    spi_display_write_cmd(&dev->params, IL3829_CMD_SET_RAM_Y, (uint8_t *)y_data, sizeof y_data);
+
+    /* Set counters to start positions */
+    spi_display_write_cmd(&dev->params, IL3829_CMD_SET_RAM_X_ADDR_COUNTER, x_data, 1);
+    spi_display_write_cmd(&dev->params, IL3829_CMD_SET_RAM_Y_ADDR_COUNTER, (uint8_t *)y_data, 2);
+}
+
+void il3829_write_buffer(il3829_t *dev, const uint8_t *buf, size_t len)
+{
+    spi_display_write_cmd(&dev->params, IL3829_CMD_WRITE_RAM, buf, len);
 }
 
 void il3829_sleep(il3829_t *dev)
