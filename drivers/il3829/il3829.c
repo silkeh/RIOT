@@ -125,7 +125,7 @@ void il3829_write_ram(il3829_t *dev)
 
 void il3829_clear(il3829_t *dev)
 {
-    il3829_fill_area(dev, IL3829_COLOR_WHITE, 0, dev->size_x, 0, dev->size_y);
+    il3829_fill(dev, IL3829_COLOR_WHITE, 0, dev->size_x, 0, dev->size_y);
 }
 
 void il3829_fill(il3829_t *dev, uint8_t x1, uint8_t x2, uint16_t y1, uint16_t y2, uint8_t color)
