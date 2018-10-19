@@ -47,7 +47,7 @@ void spi_display_read_cmd(spi_display_params_t *p, uint8_t cmd, uint8_t *params,
     spi_acquire(p->spi, p->cs_pin, SPI_MODE_0, p->spi_clk);
     spi_display_cmd_start(p, cmd, true);
     if (p->dummy) {
-        spi_transfer_byte(p->spi, p->cs_pin, true, NULL);
+        spi_transfer_byte(p->spi, p->cs_pin, true, 0x00);
     }
     spi_transfer_bytes(p->spi, p->cs_pin, false, NULL, params, plen);
     spi_release(p->spi);
