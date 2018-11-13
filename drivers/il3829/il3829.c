@@ -161,10 +161,9 @@ void il3829_set_area(il3829_t *dev, uint8_t x1, uint8_t x2, uint16_t y1, uint16_
     spi_display_write_cmd(&dev->params, IL3829_CMD_SET_RAM_X, x_data, sizeof x_data);
 
     /* Set Y bounds */
-    /* TODO: support BE */
-    uint16_t y_data[] = {
-        y1 &0x01FF,
-        (y2 - 1) & 0x01FF,
+    le_uint16_t y_data[] = {
+        byteorder_btols(byteorder_htons(y1 & 0x01FF)),
+        byteorder_btols(byteorder_htons((y2 - 1) & 0x01FF)),
     };
     spi_display_write_cmd(&dev->params, IL3829_CMD_SET_RAM_Y, (uint8_t *)y_data, sizeof y_data);
 
