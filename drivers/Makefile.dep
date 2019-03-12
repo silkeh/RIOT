@@ -457,6 +457,12 @@ ifneq (,$(filter spi_display,$(USEMODULE)))
   FEATURES_REQUIRED += periph_gpio
 endif
 
+ifneq (,$(filter spi_epaper,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_spi
+  FEATURES_REQUIRED += periph_gpio
+  USEMODULE += spi_display
+endif
+
 ifneq (,$(filter srf02,$(USEMODULE)))
   FEATURES_REQUIRED += periph_i2c
   USEMODULE += xtimer

@@ -250,6 +250,10 @@ ifneq (,$(filter soft_spi,$(USEMODULE)))
   USEMODULE_INCLUDES += $(RIOTBASE)/drivers/soft_spi/include
 endif
 
+ifneq (,$(filter spi_epaper,$(USEMODULE)))
+  USEMODULE_INCLUDES += $(RIOTBASE)/drivers/spi_epaper/include
+endif
+
 ifneq (,$(filter srf04,$(USEMODULE)))
   USEMODULE_INCLUDES += $(RIOTBASE)/drivers/srf04/include
 endif
