@@ -26,6 +26,10 @@
 #include "periph/spi.h"
 #include "periph/gpio.h"
 
+#ifdef MODULE_DISP_DEV
+#include "disp_dev.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -83,7 +87,11 @@ typedef struct {
  * @brief   Device initialisation parameters.
  */
 typedef struct {
-    epd_bw_spi_params_t params;        /**< SPI display parameters */
+    #ifdef MODULE_DISP_DEV
+    disp_dev_t *dev;                    /**< Pointer to the generic display device */
+    bool refresh_partial;               /**< Use partial instead of full refreshes */
+    #endif
+    epd_bw_spi_params_t params;         /**< SPI display parameters */
     epd_bw_spi_controller_t controller; /**< E-paper controller configuration */
     uint8_t size_x;                     /**< number of horizontal pixels in the display */
     uint16_t size_y;                    /**< number of vertical pixels in the display */
