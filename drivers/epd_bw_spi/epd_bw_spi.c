@@ -30,7 +30,7 @@ void epd_bw_spi_cmd_start(epd_bw_spi_params_t *p, uint8_t cmd, bool cont)
 {
     DEBUG("[epd_bw_spi] cmd_start: command 0x%02x\n", cmd);
     if (p->busy_pin != GPIO_UNDEF) {
-        while (gpio_read(p->busy_pin)) {}
+        while (gpio_read(p->busy_pin) == p->busy_value) {}
     }
     gpio_clear(p->dc_pin);
     spi_transfer_byte(p->spi, p->cs_pin, cont, (uint8_t)cmd);
@@ -64,7 +64,7 @@ void epd_bw_spi_wait(epd_bw_spi_params_t *p, uint32_t usec)
         while (gpio_read(p->busy_pin)) {}
     }
     else {
-        DEBUG("[epd_bw_spi] wait: for %lu microseconds\n", usec);
+        DEBUG("[epd_bw_spi] wait: for %"PRIu32" microseconds\n", usec);
         xtimer_usleep(usec);
     }
 }
@@ -126,6 +126,8 @@ void epd_bw_spi_display_init(epd_bw_spi_t *dev)
             byteorder_btols(byteorder_htons((dev->size_y - 1) & 0x01FF));
         y_size = 3;
     }
+
+    epd_bw_spi_wake(dev);
     epd_bw_spi_write_cmd(&dev->params, EPD_BW_SPI_CMD_DRIVER_OUTPUT_CONTROL,
                          (uint8_t *)y_data, y_size);
 
@@ -179,7 +181,7 @@ void epd_bw_spi_deactivate(epd_bw_spi_t *dev)
 void epd_bw_spi_init_full(epd_bw_spi_t *dev)
 {
     epd_bw_spi_display_init(dev);
-    epd_bw_spi_set_area(dev, 0, 200, 0, 200);
+    epd_bw_spi_set_area(dev, 0, dev->size_x, 0, dev->size_y);
     epd_bw_spi_write_cmd(&dev->params, EPD_BW_SPI_CMD_WRITE_LUT_REGISTER,
                          dev->controller.lut_full, dev->controller.lut_size);
 }
@@ -307,6 +309,7 @@ void epd_bw_spi_wake(epd_bw_spi_t *dev)
         gpio_clear(dev->params.rst_pin);
         xtimer_usleep(EPD_BW_SPI_WAIT_RESET);
         gpio_set(dev->params.rst_pin);
+        xtimer_usleep(EPD_BW_SPI_WAIT_RESET);
     }
 
     /* Turn off sleep mode */

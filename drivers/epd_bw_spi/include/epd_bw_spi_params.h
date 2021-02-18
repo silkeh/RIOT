@@ -37,7 +37,7 @@ extern "C" {
 #define EPD_BW_SPI_PARAM_SPI_CLK    (SPI_CLK_5MHZ)
 #endif
 #ifndef EPD_BW_SPI_PARAM_CS
-#define EPD_BW_SPI_PARAM_CS         (GPIO_UNDEF)
+#define EPD_BW_SPI_PARAM_CS         (SPI_CS_UNDEF)
 #endif
 #ifndef EPD_BW_SPI_PARAM_DC
 #define EPD_BW_SPI_PARAM_DC         (GPIO_UNDEF)
@@ -48,6 +48,9 @@ extern "C" {
 #ifndef EPD_BW_SPI_PARAM_BUSY
 #define EPD_BW_SPI_PARAM_BUSY       (GPIO_UNDEF)
 #endif
+#ifndef EPD_BW_SPI_PARAM_BUSY_VAL
+#define EPD_BW_SPI_PARAM_BUSY_VAL   (1)
+#endif
 
 #ifndef EPD_BW_SPI_PARAMS
 #define EPD_BW_SPI_PARAMS           { .spi = EPD_BW_SPI_PARAM_SPI, \
@@ -56,6 +59,7 @@ extern "C" {
                                       .dc_pin = EPD_BW_SPI_PARAM_DC, \
                                       .rst_pin = EPD_BW_SPI_PARAM_RST, \
                                       .busy_pin = EPD_BW_SPI_PARAM_BUSY, \
+                                      .busy_value = EPD_BW_SPI_PARAM_BUSY_VAL, \
 }
 #endif
 /**@}*/
@@ -97,12 +101,29 @@ static const uint8_t epd_bw_spi_il3829_lut_default_part[] = {
 }
 
 /**
+ * @brief    Configuration for SSD1607 e-paper display controller
+ */
+#define EPD_BW_SPI_CONTROLLER_SSD1607 EPD_BW_SPI_CONTROLLER_IL3829
+
+/**
  * @brief    Configuration for SSD1673 e-paper display controller
  */
 #define EPD_BW_SPI_CONTROLLER_SSD1673 { \
         .vcom = 0xA8, \
         .size_x = 150, \
         .size_y = 250, \
+        .lut_size = sizeof epd_bw_spi_il3829_lut_default_full, \
+        .lut_full = epd_bw_spi_il3829_lut_default_full, \
+        .lut_part = epd_bw_spi_il3829_lut_default_part, \
+}
+
+/**
+ * @brief    Configuration for SSD1608 e-paper display controller
+ */
+#define EPD_BW_SPI_CONTROLLER_SSD1608 { \
+        .vcom = 0xA8, \
+        .size_x = 240, \
+        .size_y = 320, \
         .lut_size = sizeof epd_bw_spi_il3829_lut_default_full, \
         .lut_full = epd_bw_spi_il3829_lut_default_full, \
         .lut_part = epd_bw_spi_il3829_lut_default_part, \
