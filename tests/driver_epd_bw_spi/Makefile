@@ -1,6 +1,6 @@
 include ../Makefile.tests_common
 
-BOARD := nucleo-f411re
+BOARD ?= nucleo-f411re
 
 USEMODULE += xtimer
 USEMODULE += epd_bw_spi
