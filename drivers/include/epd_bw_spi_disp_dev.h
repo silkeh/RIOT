@@ -30,6 +30,14 @@ extern "C" {
  */
 extern const disp_dev_driver_t epd_bw_spi_disp_dev_driver;
 
+/**
+* @brief   Configure the display to update with a full or partial refresh
+*
+* @param[in] dev     Device descriptor.
+* @param[in] partial Boolean to set partial or full mode.
+*/
+void epd_bw_spi_set_partial(disp_dev_t *dev, bool partial);
+
 #ifdef __cplusplus
 }
 #endif

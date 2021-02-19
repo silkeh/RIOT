@@ -114,6 +114,11 @@ static void _epd_bw_spi_set_invert(disp_dev_t *disp_dev, bool invert)
     assert(false);
 }
 
+void epd_bw_spi_set_partial(disp_dev_t *disp_dev, bool partial)
+{
+    ((epd_bw_spi_t *)disp_dev)->refresh_partial = partial;
+}
+
 const disp_dev_driver_t epd_bw_spi_disp_dev_driver = {
     .map = _epd_bw_spi_map,
     .height = _epd_bw_spi_height,
