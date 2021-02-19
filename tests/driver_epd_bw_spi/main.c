@@ -25,8 +25,9 @@
 #include "xtimer.h"
 
 #include "epd_bw_spi.h"
-#include "epd_bw_spi_pictures.h"
 #include "epd_bw_spi_params.h"
+
+#include "pictures.h"
 
 const uint16_t riot_32_height = sizeof(riot_logo_32) / sizeof(riot_logo_32[0]);
 
@@ -64,7 +65,8 @@ int main(void)
 {
     epd_bw_spi_t dev;
     int init = epd_bw_spi_init(&dev, epd_bw_spi_params, epd_bw_spi_controller,
-                               DISPLAY_X, DISPLAY_Y, EPD_BW_SPI_Y_INC_X_INC);
+                               EPD_BW_SPI_DISPLAY_X, EPD_BW_SPI_DISPLAY_Y,
+                               EPD_BW_SPI_Y_INC_X_INC);
 
     if (init != 0) {
         printf("EPD_BW_SPI INIT FAILED: %i\n", init);
@@ -72,6 +74,7 @@ int main(void)
     }
 
     xtimer_ticks32_t last_wakeup = xtimer_now();
+
     while (1) {
         /* Set both RAM buffers to the RIOT logo */
         draw_riot(&dev);
