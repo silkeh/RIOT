@@ -64,7 +64,7 @@ void epd_bw_spi_wait(epd_bw_spi_params_t *p, uint32_t usec)
         while (gpio_read(p->busy_pin)) {}
     }
     else {
-        DEBUG("[epd_bw_spi] wait: for %"PRIu32" microseconds\n", usec);
+        DEBUG("[epd_bw_spi] wait: for %" PRIu32 " microseconds\n", usec);
         xtimer_usleep(usec);
     }
 }
@@ -104,6 +104,7 @@ int epd_bw_spi_init(epd_bw_spi_t *dev,
     gpio_set(dev->params.dc_pin);
 
     int res = spi_init_cs(dev->params.spi, dev->params.cs_pin);
+
     if (res != SPI_OK) {
         DEBUG("[epd_bw_spi] init: error initializing the CS pin [%i]\n", res);
         return res;
@@ -136,6 +137,7 @@ void epd_bw_spi_display_init(epd_bw_spi_t *dev)
         0xD6,   /* Phase 2: 30 ms phase, sel 3, 3.34 us off */
         0x9D,   /* Phase 3: 10 ms phase, sel 4, 1.54 us off */
     };
+
     epd_bw_spi_write_cmd(&dev->params,
                          EPD_BW_SPI_CMD_BOOSTER_SOFT_START_CONTROL, data, 3);
 
@@ -239,6 +241,7 @@ void epd_bw_spi_fill(epd_bw_spi_t *dev, uint8_t x1, uint8_t x2, uint16_t y1,
     epd_bw_spi_cmd_start(&dev->params, EPD_BW_SPI_CMD_WRITE_RAM, true);
 
     uint16_t size = ((x2 - x1) >> 3) * (y2 - y1);
+
     for (uint16_t i = 0; i < size - 1; i++) {
         spi_transfer_byte(dev->params.spi, dev->params.cs_pin, true, color);
     }
@@ -270,6 +273,7 @@ void epd_bw_spi_set_area(epd_bw_spi_t *dev, uint8_t x1, uint8_t x2, uint16_t y1,
     /* Set Y bounds */
     le_uint16_t y_data[2] = { 0 };
     uint8_t y_size;
+
     if (dev->controller.size_y <= 255) {
         y_data[0].u8[0] = y1;
         y_data[0].u8[1] = y2 - 1;
@@ -314,6 +318,7 @@ void epd_bw_spi_wake(epd_bw_spi_t *dev)
 
     /* Turn off sleep mode */
     uint8_t data[] = { 0x00 };
+
     epd_bw_spi_write_cmd(&dev->params, EPD_BW_SPI_CMD_DEEP_SLEEP_MODE, data, 1);
     epd_bw_spi_wait(&dev->params, EPD_BW_SPI_WAIT_RESET);
 }

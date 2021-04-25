@@ -30,6 +30,12 @@ extern "C" {
  * @brief    Set default configuration parameters for a SPI e-Paper display
  * @{
  */
+#ifndef EPD_BW_SPI_DISPLAY_X
+#define EPD_BW_SPI_DISPLAY_X        (200)
+#endif
+#ifndef EPD_BW_SPI_DISPLAY_Y
+#define EPD_BW_SPI_DISPLAY_Y        (200)
+#endif
 #ifndef EPD_BW_SPI_PARAM_SPI
 #define EPD_BW_SPI_PARAM_SPI        (SPI_DEV(0))
 #endif
