@@ -62,20 +62,26 @@ void phydat_time_to_senml(senml_value_t *senml, const phydat_t *phydat)
     senml->attr.unit = SENML_UNIT_SECOND;
 }
 
-static int16_t month_to_yday[] = { 334, 0, 31, 59, 90, 120, 151,
-                                   181, 212, 243, 273, 304, 334 };
+/**
+ * Offsets of the first day of the month starting with January.
+ * Months after February have a negative offset to efficiently handle leap years.
+ */
+static int16_t month_to_yday[] = { 0,      31, -306, -275, -245, -214,
+                                   -184, -153, -122,  -92,  -61,  -31 };
 
 void phydat_date_to_senml(senml_value_t *senml, const phydat_t *phydat)
 {
     senml->attr.unit = SENML_UNIT_SECOND;
 
-    int64_t month = (int64_t)phydat->val[0];
-    int64_t year = (int64_t)phydat->val[0];
+    /* Zero-indexed month */
+    int64_t month = (int64_t)phydat->val[1] - 1;
 
-    /* Calculate days of the year based on the month and leap year */
-    int64_t day = (int64_t)phydat->val[0] + month_to_yday[month] +
-                  (month > 2) && ((year & 3) == 0) &&
-                  ((year % 400 == 0) || (year % 100 != 0));
+    /* Get year relative to 1900. */
+    /* Add a year for months after Feb to deal with leap years. */
+    int64_t year = (int64_t)phydat->val[2] + (month > 1) - 1900;
+
+    /* Calculate days of the year based on the month */
+    int64_t day = (int64_t)phydat->val[0] + (int64_t)month_to_yday[month] - 1;
 
     /* POSIX calculation of a UNIX timestamp. */
     /* See section 4.16 of the The Open Group Base Specifications Issue 7. */
@@ -110,8 +116,8 @@ void phydat_to_senml_float(senml_value_t *senml, const phydat_t *phydat, const u
         break;
 
     /* simple conversions */
-    case UNIT_F:
-        value = (value + 459.67) * (5 / 9);
+    case UNIT_TEMP_F:
+        value = (value + 459.67) * (5. / 9.);
         senml->attr.unit = SENML_UNIT_KELVIN;
         break;
     case UNIT_G:
@@ -157,7 +163,7 @@ void phydat_to_senml_decimal(senml_value_t *senml, const phydat_t *phydat, const
 
     /* simple conversions */
     case UNIT_BAR:
-        e += 6;
+        e += 5;
         senml->attr.unit = SENML_UNIT_PASCAL;
         break;
     case UNIT_GPM3:

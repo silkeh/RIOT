@@ -29,8 +29,7 @@
 #include <stdint.h>
 
 #include "senml.h"
-#include "phydat.h"
-#include "nanocbor/nanocbor.h"
+#include <phydat.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,6 +52,8 @@ void phydat_time_to_senml(senml_value_t *senml, const phydat_t *phydat);
  * Writes the date as described by @p phydat to @p senml as a Unix timestamp in seconds.
  * All dimensions of @p phydat are used for conversion.
  *
+ * @note `phydat->scale` must be zero.
+ *
  * @param[out] senml       SenML value to store value in.
  * @param[in]  phydat      Phydat to convert.
  */
@@ -62,6 +63,8 @@ void phydat_date_to_senml(senml_value_t *senml, const phydat_t *phydat);
  *
  * Writes the value of the given @p dim of @p phydat as a boolean.
  * @p phydat is assumed to be of @ref UNIT_BOOL.
+ *
+ * @note `phydat->scale` must be zero.
  *
  * @param[out] senml       SenML value to store value in.
  * @param[in]  phydat      Phydat to convert.

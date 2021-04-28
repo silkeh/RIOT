@@ -31,9 +31,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "phydat.h"
-#include "nanocbor/nanocbor.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
